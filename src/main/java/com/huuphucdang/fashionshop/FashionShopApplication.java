@@ -1,7 +1,14 @@
 package com.huuphucdang.fashionshop;
 
+//import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
+//import com.huuphucdang.fashionshop.service.AuthenticationService;
+//import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import org.springframework.context.annotation.Bean;
+
+import static com.huuphucdang.fashionshop.model.entity.Role.ADMIN;
+import static com.huuphucdang.fashionshop.model.entity.Role.MANAGER;
 
 @SpringBootApplication
 public class FashionShopApplication {

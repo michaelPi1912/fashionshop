@@ -18,6 +18,7 @@ public class ProductCategory {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
+
     private String name;
 
     @ManyToOne
@@ -42,4 +43,17 @@ public class ProductCategory {
             mappedBy = "promotionCategories")
     @JsonIgnore
     private Set<Promotion> promotions = new HashSet<>();
+
+    public void addPromotion(Promotion promotion) {
+        this.promotions.add(promotion);
+        promotion.getPromotionCategories().add(this);
+    }
+
+    public void removePromotion(UUID promotionId) {
+        Promotion promotion = this.promotions.stream().filter(t -> t.getId() == promotionId).findFirst().orElse(null);
+        if (promotion != null) {
+            this.promotions.remove(promotion);
+            promotion.getPromotionCategories().remove(this);
+        }
+    }
 }

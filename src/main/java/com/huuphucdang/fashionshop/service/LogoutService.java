@@ -1,4 +1,4 @@
-package com.huuphucdang.fashionshop.config;
+package com.huuphucdang.fashionshop.service;
 
 import com.huuphucdang.fashionshop.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;

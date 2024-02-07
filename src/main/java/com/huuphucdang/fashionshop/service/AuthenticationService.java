@@ -6,7 +6,7 @@ import com.huuphucdang.fashionshop.model.entity.Token;
 import com.huuphucdang.fashionshop.model.entity.TokenType;
 import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
-import com.huuphucdang.fashionshop.model.payload.respone.AuthenticationResponse;
+import com.huuphucdang.fashionshop.model.payload.response.AuthenticationResponse;
 import com.huuphucdang.fashionshop.repository.TokenRepository;
 import com.huuphucdang.fashionshop.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +68,7 @@ public class AuthenticationService {
         saveUserToken(user,jwtToken);
         return AuthenticationResponse
                 .builder()
+                .user(user)
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -123,5 +124,16 @@ public class AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+
+    public String getUserEmailByToken(HttpServletRequest request){
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+            return null;
+        }
+
+        jwt = authHeader.substring(7);
+        return jwtService.extractUsername(jwt);
     }
 }

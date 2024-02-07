@@ -30,6 +30,7 @@ public class Address {
     @ManyToOne
     @JoinColumn(name = "address_type_id")
     private AddressType addressType;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
