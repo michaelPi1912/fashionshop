@@ -28,8 +28,10 @@ public class User implements UserDetails {
     private String firstname;
     @Column(name = "last_name")
     private String lastname;
-    @Column(name = "email_address")
+    @Column(name = "email_address", unique = true)
     private String email;
+    @Column(name = "image")
+    private String image;
     @JsonIgnore
     private String password;
     @Column(name = "phone_number")

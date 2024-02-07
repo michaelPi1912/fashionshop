@@ -28,8 +28,7 @@ public class Promotion {
     private Date endDate;
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
+                    CascadeType.ALL
             })
     @JoinTable(name = "promotion_category",
             joinColumns = { @JoinColumn(name = "promotion_id") },

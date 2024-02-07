@@ -2,7 +2,7 @@ package com.huuphucdang.fashionshop.controller;
 
 import com.huuphucdang.fashionshop.model.payload.request.AuthenticationRequest;
 import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
-import com.huuphucdang.fashionshop.model.payload.respone.AuthenticationResponse;
+import com.huuphucdang.fashionshop.model.payload.response.AuthenticationResponse;
 import com.huuphucdang.fashionshop.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +22,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ){
+
         return ResponseEntity.ok(service.register(request));
     }
 

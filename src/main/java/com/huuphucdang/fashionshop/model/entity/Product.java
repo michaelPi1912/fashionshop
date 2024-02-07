@@ -45,4 +45,18 @@ public class Product {
     @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrderLine> orderLines;
+
+
+    public void addVariationOption(VariationOption variationOption) {
+        this.options.add(variationOption);
+        variationOption.getProducts().add(this);
+    }
+
+    public void removeVariationOption(UUID variationOptionId) {
+        VariationOption variationOption = this.options.stream().filter(t -> t.getId() == variationOptionId).findFirst().orElse(null);
+        if (variationOption != null) {
+            this.options.remove(variationOption);
+            variationOption.getProducts().remove(this);
+        }
+    }
 }
