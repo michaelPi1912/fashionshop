@@ -20,8 +20,7 @@ import java.util.UUID;
 public class PaymentType {
     @Id
     @GeneratedValue
-    @UuidGenerator
-    private UUID id;
+    private int id;
     private String name;
     @JsonIgnore
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)

@@ -1,5 +1,6 @@
 package com.huuphucdang.fashionshop.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -17,6 +18,7 @@ public class CartItem {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "shopping_cart_id")
     private Cart cart;

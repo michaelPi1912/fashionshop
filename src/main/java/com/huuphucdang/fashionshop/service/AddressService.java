@@ -19,14 +19,7 @@ public class AddressService {
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
-//    public Address findById(UUID id){
-//        Optional<Address> address = addressRepository.findById(id);
-//        if(address == null){
-//            return null;
-//        }
-//
-//        return address.get();
-//    }
+
 
     public AddressResponse findAllByUser(String email){
         Optional<User> user = userRepository.findByEmail(email);
@@ -44,16 +37,15 @@ public class AddressService {
 //        return addressRepository.findAll();
 //    }
 
-    public Address saveAddress(AddressRequest body, String email){
+    public Address saveAddress(AddressRequest body, User user){
 
-        Optional<User> user = userRepository.findByEmail(email);
         Address address = new Address();
         address.setAddressType(body.getAddressType());
         address.setCommune(body.getCommune());
         address.setAddressDetail(body.getAddressDetail());
         address.setDistrict(body.getDistrict());
         address.setProvince(body.getProvince());
-        address.setUser(user.get());
+        address.setUser(user);
         return addressRepository.save(address);
     }
     public void deleteAddress(UUID id) {

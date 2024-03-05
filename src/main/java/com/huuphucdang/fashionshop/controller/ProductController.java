@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     @PutMapping("/update/{id}")
-    public void updateAddress(
+    public void updateProduct(
             @RequestBody ProductRequest body,
             @PathVariable("id") UUID id
     ){

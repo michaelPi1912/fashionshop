@@ -1,5 +1,6 @@
 package com.huuphucdang.fashionshop.controller;
 
+import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.payload.request.AddressRequest;
 import com.huuphucdang.fashionshop.model.payload.response.AddressResponse;
 import com.huuphucdang.fashionshop.service.AddressService;
@@ -7,6 +8,7 @@ import com.huuphucdang.fashionshop.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,9 +23,9 @@ public class AddressController {
     @PostMapping("/insert")
     public void saveAddress(
             @RequestBody AddressRequest body,
-            HttpServletRequest request
+            @AuthenticationPrincipal User user
     ){
-        service.saveAddress(body, auth.getUserEmailByToken(request));
+        service.saveAddress(body, user);
     }
 
     @GetMapping("/all")
