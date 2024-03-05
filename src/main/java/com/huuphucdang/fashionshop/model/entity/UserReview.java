@@ -21,6 +21,10 @@ public class UserReview {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private UserReview parent;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

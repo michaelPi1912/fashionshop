@@ -24,6 +24,7 @@ public class Order {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -32,7 +33,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
-    @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderLine> orderLines;
     @ManyToOne
