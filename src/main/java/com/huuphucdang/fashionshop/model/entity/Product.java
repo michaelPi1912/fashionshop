@@ -29,6 +29,7 @@ public class Product {
     private String description;
     private String productImage;
     private Integer price;
+    private Integer sold;
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,

@@ -21,9 +21,8 @@ public class AddressService {
     private final UserRepository userRepository;
 
 
-    public AddressResponse findAllByUser(String email){
-        Optional<User> user = userRepository.findByEmail(email);
-        List<Address> addressList = addressRepository.getAllByUser(user.get().getId());
+    public AddressResponse findAllByUser(User user){
+        List<Address> addressList = addressRepository.getAllByUser(user.getId());
         if(addressList == null){
             return null;
         }
@@ -33,9 +32,6 @@ public class AddressService {
                 .addressList(addressList)
                 .build();
     }
-//    public List<Address> findAll(){
-//        return addressRepository.findAll();
-//    }
 
     public Address saveAddress(AddressRequest body, User user){
 
