@@ -1,4 +1,4 @@
-package com.huuphucdang.fashionshop.controller;
+package com.huuphucdang.fashionshop.controller.admin;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

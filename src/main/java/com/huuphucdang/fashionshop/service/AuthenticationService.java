@@ -5,6 +5,7 @@ import com.huuphucdang.fashionshop.config.JwtService;
 import com.huuphucdang.fashionshop.model.entity.Token;
 import com.huuphucdang.fashionshop.model.entity.TokenType;
 import com.huuphucdang.fashionshop.model.entity.User;
+import com.huuphucdang.fashionshop.model.payload.request.ChangePasswordRequest;
 import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
 import com.huuphucdang.fashionshop.model.payload.response.AuthenticationResponse;
 import com.huuphucdang.fashionshop.repository.TokenRepository;
@@ -30,6 +31,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User
                 .builder()
@@ -38,6 +40,8 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
+                .phone(request.getPhone())
+                .gender(request.getGender())
                 .build();
         var saveUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
@@ -135,5 +139,21 @@ public class AuthenticationService {
 
         jwt = authHeader.substring(7);
         return jwtService.extractUsername(jwt);
+    }
+
+    //reset password
+    public void changePasswordForgot(ChangePasswordRequest request, String email) {
+        var user = (User) userRepository.findByEmail(email).orElseThrow();
+//        make a reset password api
+//        var jwtToken = jwtService.generateToken(user);
+//        var refreshToken = jwtService.generateRefreshToken(user);
+//        revokeAllUserTokens(user);
+//        saveUserToken(user,jwtToken);
+        if(!request.getNewPassword().equals(request.getConfirmationPassword())){
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 }

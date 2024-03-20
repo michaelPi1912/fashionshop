@@ -29,9 +29,9 @@ public class AddressController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<AddressResponse> getAddressByUser(HttpServletRequest request){
+    public ResponseEntity<AddressResponse> getAddressByUser(@AuthenticationPrincipal User user){
 
-        return ResponseEntity.ok(service.findAllByUser(auth.getUserEmailByToken(request)));
+        return ResponseEntity.ok(service.findAllByUser(user));
     }
 
     @DeleteMapping("/delete/{id}")

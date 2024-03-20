@@ -1,7 +1,9 @@
 package com.huuphucdang.fashionshop.repository;
 
 import com.huuphucdang.fashionshop.model.entity.Token;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -17,4 +19,10 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
     List<Token> findAllValidTokensByUser(UUID userId);
 
     Optional<Token> findByToken(String token);
+    @Query("""
+            Delete from Token t where t.user.id = :id
+            """)
+    @Transactional
+    @Modifying
+    void deleteAllTokenByUser(UUID id);
 }

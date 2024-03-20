@@ -1,6 +1,7 @@
 package com.huuphucdang.fashionshop.controller;
 
 import com.huuphucdang.fashionshop.model.payload.request.AuthenticationRequest;
+import com.huuphucdang.fashionshop.model.payload.request.ChangePasswordRequest;
 import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
 import com.huuphucdang.fashionshop.model.payload.response.AuthenticationResponse;
 import com.huuphucdang.fashionshop.service.AuthenticationService;
@@ -40,5 +41,14 @@ public class AuthenticationController {
     ) throws IOException {
         service.refreshToken(request, response);
     }
-
+    //send Link to mail
+    //chua test
+    @PutMapping("/forgot-password/{email}")
+    public ResponseEntity<?> changePasswordForgot(
+            @RequestBody ChangePasswordRequest request,
+            @PathVariable("email") String email
+    ){
+        service.changePasswordForgot(request, email);
+        return ResponseEntity.ok().build();
+    }
 }

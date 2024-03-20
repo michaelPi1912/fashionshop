@@ -21,6 +21,7 @@ public class OrderService {
     private final ShippingMethodRepository shippingMethodRepository;
     private final AddressRepository addressRepository;
     private final OrderStatusRepository orderStatusRepository;
+    private final ProductRepository productRepository;
     public OrderResponse saveOrder(User user, OrderRequest body) {
         Order order = new Order();
         Date date = new Date();
@@ -59,7 +60,16 @@ public class OrderService {
         Order order = orderRepository.findById(id).orElseThrow();
         OrderStatus status = orderStatusRepository.findById(body.getStatusId()).orElseThrow();
         order.setOrderStatus(status);
-
+        //set sold when order delivered
+        if(status.getId() == 3){
+            order.getOrderLines().forEach(orderLine -> {
+                int quantity = orderLine.getQuantity();
+//                orderLine.getProduct().setSold(quantity);
+                Product product = productRepository.findById(orderLine.getProduct().getId()).orElseThrow();
+                product.setSold(quantity);
+                productRepository.save(product);
+            });
+        }
         return orderRepository.save(order);
     }
 
