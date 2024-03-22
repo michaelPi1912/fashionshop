@@ -14,5 +14,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             where p.productCategory.id = :categoryId
             """)
     List<Product> getProductsByCategoryId(UUID categoryId);
-
+    @Query("""
+            select p
+            from Product p
+            where p.productCategory.name = :categoryName
+            """)
+    List<Product> getProductsByCategoryName(String categoryName);
 }
