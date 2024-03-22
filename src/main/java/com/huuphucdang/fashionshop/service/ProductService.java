@@ -96,4 +96,11 @@ public class ProductService {
                 .builder()
                 .optionList(optionList).build();
     }
+
+    public ProductResponse getAllByCategoryName(String categoryName) {
+        List<Product> productList = productRepository.getProductsByCategoryName(categoryName);
+
+        return ProductResponse.builder()
+                .productList(productList).build();
+    }
 }

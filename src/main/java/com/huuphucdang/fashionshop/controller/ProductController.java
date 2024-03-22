@@ -42,6 +42,11 @@ public class ProductController {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<ProductResponse> getAllProductByCategoryName(@RequestParam(value="name") String categoryName){
+        return ResponseEntity.ok(service.getAllByCategoryName(categoryName));
+    }
+
     @GetMapping("/{categoryId}/products")
     public ResponseEntity<ProductResponse> getAllProductByCategory(@PathVariable("categoryId") UUID categoryId){
 
