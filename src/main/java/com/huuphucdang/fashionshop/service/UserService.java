@@ -1,10 +1,15 @@
 package com.huuphucdang.fashionshop.service;
 
+import com.huuphucdang.fashionshop.model.entity.Product;
 import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.payload.request.ChangePasswordRequest;
+import com.huuphucdang.fashionshop.model.payload.response.UsersResponse;
 import com.huuphucdang.fashionshop.repository.TokenRepository;
 import com.huuphucdang.fashionshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,8 +44,35 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public List<User> findAllUser() {
-        List<User> users = userRepository.findAll();
-        return users;
+    public UsersResponse findAllUser(int page, int size) {
+        try{
+            List<User> users;
+            Pageable paging = PageRequest.of(page, size);
+            Page<User> pageUsers = userRepository.findAll(paging);
+            users = pageUsers.getContent();
+
+            return UsersResponse.builder()
+                    .users(users)
+                    .currentPage(pageUsers.getNumber())
+                    .totalItems(pageUsers.getTotalElements())
+                    .totalPages(pageUsers.getTotalPages())
+                    .build();
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
     }
+
+    public void blockUser(UUID id) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    public void unBlockUser(UUID id) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setActive(true);
+        userRepository.save(user);
+    }
+
 }

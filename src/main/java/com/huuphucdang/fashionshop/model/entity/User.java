@@ -40,6 +40,8 @@ public class User implements UserDetails {
     private Role role;
     private String gender;
 
+    private boolean isActive;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Address> addresses;
@@ -78,7 +80,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isActive;
     }
 
     @Override

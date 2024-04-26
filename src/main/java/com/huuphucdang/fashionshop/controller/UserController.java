@@ -3,6 +3,7 @@ package com.huuphucdang.fashionshop.controller;
 import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.payload.request.ChangePasswordRequest;
 import com.huuphucdang.fashionshop.model.payload.response.AddressResponse;
+import com.huuphucdang.fashionshop.model.payload.response.UsersResponse;
 import com.huuphucdang.fashionshop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +31,30 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> getAllUser(){
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    public ResponseEntity<UsersResponse> getAllUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
 
-        return ResponseEntity.ok(service.findAllUser());
+        return ResponseEntity.ok(service.findAllUser(page, size));
     }
+    @PutMapping("/block/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void blockUser(@PathVariable("id") UUID id){
+        service.blockUser(id);
+    }
+    @PutMapping("/un-block/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void unBlockUser(@PathVariable("id") UUID id){
+        service.unBlockUser(id);
+    }
+
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteAddress(@PathVariable("id") UUID id){
+    public void deleteUser(@PathVariable("id") UUID id){
         service.deleteUser(id);
     }
+
 }

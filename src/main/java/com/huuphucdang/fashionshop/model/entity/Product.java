@@ -27,8 +27,10 @@ public class Product {
     private ProductCategory productCategory;
     private String name;
     private String description;
-    private String productImage;
+    private List<String> productImage;
     private Integer price;
+
+    private Integer stock;
     private Integer sold;
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {

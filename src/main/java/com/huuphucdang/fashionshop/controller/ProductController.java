@@ -37,9 +37,12 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<ProductResponse> getAllProduct(){
+    public ResponseEntity<ProductResponse> getAllProduct(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
 
-        return ResponseEntity.ok(service.getAll());
+        return ResponseEntity.ok(service.getAll(page, size));
     }
 
     @GetMapping("/list")
