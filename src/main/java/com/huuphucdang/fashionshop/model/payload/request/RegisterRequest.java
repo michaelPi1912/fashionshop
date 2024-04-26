@@ -10,12 +10,11 @@ import lombok.*;
 public class RegisterRequest {
 
     private String firstname;
-
     private String lastname;
-
     private String email;
     private String password;
     private String phone;
     private String gender;
     private Role role;
+    private String image;
 }

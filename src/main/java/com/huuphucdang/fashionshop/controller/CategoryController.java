@@ -11,9 +11,11 @@ import com.huuphucdang.fashionshop.service.CategoryService;
 import com.huuphucdang.fashionshop.service.PromotionService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.UUID;
 
 @RestController
@@ -23,17 +25,27 @@ public class CategoryController {
     private final CategoryService service;
 
     @PostMapping("/insert")
-    public void saveCategory(
+    public ResponseEntity<ProductCategory> saveCategory(
             @RequestBody CategoryRequest body
     ){
-        service.saveCategory(body);
+        return ResponseEntity.ok(service.saveCategory(body));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<CategoryResponse> getAll(){
-
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<CategoryResponse> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
+        return ResponseEntity.ok(service.findAll(page,size));
     }
+
+    @GetMapping("/")
+    public ResponseEntity<CategoryResponse> findAll(
+
+    ){
+        return ResponseEntity.ok(service.getAll());
+    }
+
 
     @GetMapping("/{categoryId}/promotions")
     public ResponseEntity<PromotionResponse> getAllPromotionByCategoryId(@PathVariable(value = "categoryId") UUID categoryId) {

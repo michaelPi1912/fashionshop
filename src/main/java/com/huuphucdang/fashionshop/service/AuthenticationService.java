@@ -42,6 +42,8 @@ public class AuthenticationService {
                 .role(request.getRole())
                 .phone(request.getPhone())
                 .gender(request.getGender())
+                .image("")
+                .isActive(true)
                 .build();
         var saveUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

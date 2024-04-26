@@ -8,10 +8,15 @@ import com.huuphucdang.fashionshop.model.payload.response.PromotionResponse;
 import com.huuphucdang.fashionshop.repository.CategoryRepository;
 import com.huuphucdang.fashionshop.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,15 +42,30 @@ public class CategoryService {
     }
 
     //getAll
-    public CategoryResponse findAll(){
-        List<ProductCategory> categoryList = categoryRepository.getAll();
-        if(categoryList == null){
+    public CategoryResponse findAll(int page, int size){
+
+        try {
+            List<ProductCategory> categoryList;
+            Pageable paging = PageRequest.of(page, size);
+            Page<ProductCategory> pageCategories = categoryRepository.findAll(paging);
+            categoryList = pageCategories.getContent();
+            return CategoryResponse
+                    .builder()
+                    .categoryList(categoryList)
+                    .currentPage(pageCategories.getNumber())
+                    .totalItems(pageCategories.getTotalElements())
+                    .totalPages(pageCategories.getTotalPages())
+                    .build();
+        }catch (Exception e){
+            System.out.println(e);
             return null;
         }
+    }
 
-        return CategoryResponse
-                .builder()
-                .categoryList(categoryList)
+    public CategoryResponse getAll(){
+        List<ProductCategory> categories = categoryRepository.getAll();
+        return CategoryResponse.builder()
+                .categoryList(categories)
                 .build();
     }
 

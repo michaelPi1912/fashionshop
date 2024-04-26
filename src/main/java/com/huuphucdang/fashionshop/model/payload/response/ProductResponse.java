@@ -14,4 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductResponse {
     private List<Product> productList;
+    int currentPage;
+    long totalItems;
+    int totalPages;
 }

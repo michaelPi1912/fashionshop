@@ -10,6 +10,10 @@ import com.huuphucdang.fashionshop.repository.CategoryRepository;
 import com.huuphucdang.fashionshop.repository.ProductRepository;
 import com.huuphucdang.fashionshop.repository.VariationOptionRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,16 +37,31 @@ public class ProductService {
         product.setDescription(body.getDescription());
         product.setProductImage(body.getImage());
         product.setPrice(body.getPrice());
+        product.setSold(0);
+        product.setStock(0);
         return productRepository.save(product);
     }
 
 
-    public ProductResponse getAll(){
+    public ProductResponse getAll(int page,int size){
+        try{
+            List<Product> productList;
 
-        List<Product> productList = productRepository.findAll();
+            Pageable paging = PageRequest.of(page, size);
+            Page<Product> pageProducts = productRepository.findAll(paging);
+            productList = pageProducts.getContent();
 
-        return ProductResponse.builder()
-                .productList(productList).build();
+            return ProductResponse.builder()
+                    .productList(productList)
+                    .currentPage(pageProducts.getNumber())
+                    .totalItems(pageProducts.getTotalElements())
+                    .totalPages(pageProducts.getTotalPages())
+                    .build();
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
+
     }
 
     public ProductResponse getAllByCategoryId(UUID categoryId){
@@ -60,6 +79,7 @@ public class ProductService {
         product.setDescription(body.getDescription());
         product.setProductImage(body.getImage());
         product.setPrice(body.getPrice());
+        product.setStock(body.getStock());
         return productRepository.save(product);
     }
 

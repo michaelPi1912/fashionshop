@@ -28,9 +28,8 @@ public class OrderLine {
     @JoinColumn(name = "product_id")
     @NaturalId
     private Product product;
-//    @JsonIgnore
-//    @ElementCollection
-//    private List<VariationOption> options;
+    @ElementCollection
+    private List<VariationOption> options;
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;

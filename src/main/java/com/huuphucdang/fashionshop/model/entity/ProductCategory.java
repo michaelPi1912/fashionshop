@@ -24,14 +24,13 @@ public class ProductCategory {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private ProductCategory parent;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private Collection<ProductCategory> categories;
     @JsonIgnore
     @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL)
     private List<Product> products;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<Variation> variations;
 

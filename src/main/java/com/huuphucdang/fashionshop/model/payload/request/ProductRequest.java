@@ -19,6 +19,7 @@ public class ProductRequest {
     private UUID categoryId;
     private String name;
     private String description;
-    private String image;
+    private List<String> image;
     private Integer price;
+    private Integer stock;
 }
