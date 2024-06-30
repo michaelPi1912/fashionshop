@@ -27,15 +27,10 @@ public class Address {
     private String district;
     private String commune;
     private String addressDetail;
-    @ManyToOne
-    @JoinColumn(name = "address_type_id")
-    private AddressType addressType;
+    private String addressType;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @JsonIgnore
-    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
-    private List<Order> orders;
-
 }

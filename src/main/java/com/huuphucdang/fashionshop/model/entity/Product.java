@@ -28,38 +28,21 @@ public class Product {
     private String name;
     private String description;
     private List<String> productImage;
-    private Integer price;
-
-    private Integer stock;
     private Integer sold;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductItem> productItem;
+
+
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
-            })
-    @JoinTable(name = "product_configuration",
-            joinColumns = { @JoinColumn(name = "product_id") },
-            inverseJoinColumns = { @JoinColumn(name = "variation_option_id") })
-    private Set<VariationOption> options = new HashSet<>();
+            },
+            mappedBy = "products")
+    @JsonIgnore
+    private Set<User> users = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<CartItem> cartItems;
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<OrderLine> orderLines;
-
-
-    public void addVariationOption(VariationOption variationOption) {
-        this.options.add(variationOption);
-        variationOption.getProducts().add(this);
-    }
-
-    public void removeVariationOption(UUID variationOptionId) {
-        VariationOption variationOption = this.options.stream().filter(t -> t.getId() == variationOptionId).findFirst().orElse(null);
-        if (variationOption != null) {
-            this.options.remove(variationOption);
-            variationOption.getProducts().remove(this);
-        }
-    }
+    private Set<UserReview> reviews;
 }

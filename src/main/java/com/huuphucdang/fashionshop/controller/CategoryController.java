@@ -32,6 +32,7 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
+
     public ResponseEntity<CategoryResponse> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
@@ -39,7 +40,7 @@ public class CategoryController {
         return ResponseEntity.ok(service.findAll(page,size));
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public ResponseEntity<CategoryResponse> findAll(
 
     ){

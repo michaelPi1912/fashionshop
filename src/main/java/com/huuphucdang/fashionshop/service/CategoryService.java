@@ -1,12 +1,17 @@
 package com.huuphucdang.fashionshop.service;
 
+import com.huuphucdang.fashionshop.model.entity.Product;
 import com.huuphucdang.fashionshop.model.entity.ProductCategory;
 import com.huuphucdang.fashionshop.model.entity.Promotion;
+import com.huuphucdang.fashionshop.model.entity.Variation;
 import com.huuphucdang.fashionshop.model.payload.request.CategoryRequest;
+import com.huuphucdang.fashionshop.model.payload.request.VariationRequest;
 import com.huuphucdang.fashionshop.model.payload.response.CategoryResponse;
 import com.huuphucdang.fashionshop.model.payload.response.PromotionResponse;
 import com.huuphucdang.fashionshop.repository.CategoryRepository;
+import com.huuphucdang.fashionshop.repository.ProductRepository;
 import com.huuphucdang.fashionshop.repository.PromotionRepository;
+import com.huuphucdang.fashionshop.repository.VariationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,18 +32,32 @@ public class CategoryService {
     private  final CategoryRepository categoryRepository;
 
     private final PromotionRepository promotionRepository;
+    private final VariationRepository variationRepository;
+    private final VariationService variationService;
+    private final ProductRepository productRepository;
+    private final ProductService productService;
 
     public ProductCategory saveCategory(CategoryRequest body) {
         ProductCategory category = new ProductCategory();
         category.setName(body.getName());
-        // enter UUID => get Category by ID => add object to parent. code again
         if(body.getParentId() != null){
-            ProductCategory categoryParent = categoryRepository.getReferenceById(body.getParentId());
+            ProductCategory categoryParent = categoryRepository.findById(body.getParentId()).orElseThrow();
             category.setParent(categoryParent);
         }else {
             category.setParent(null);
         }
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
+
+        VariationRequest color = new VariationRequest();
+        color.setCategoryId(category.getId());
+        color.setName("Color");
+        variationService.saveVariation(color);
+        VariationRequest size = new VariationRequest();
+        size.setCategoryId(category.getId());
+        size.setName("Size");
+        variationService.saveVariation(size);
+
+        return category;
     }
 
     //getAll
@@ -63,7 +82,10 @@ public class CategoryService {
     }
 
     public CategoryResponse getAll(){
-        List<ProductCategory> categories = categoryRepository.getAll();
+        List<ProductCategory> categories = new ArrayList<>();
+
+        categoryRepository.findAll().forEach(categories::add);
+
         return CategoryResponse.builder()
                 .categoryList(categories)
                 .build();
@@ -71,6 +93,14 @@ public class CategoryService {
 
     //delete
     public void deleteCategory(UUID id) {
+        List<Variation> variations = variationRepository.getByCategoryId(id);
+        variations.forEach(variation -> {
+            variationService.deleteVariation(variation.getId());
+        });
+        List<Product> products = productRepository.getProductsByCategoryId(id);
+        products.forEach(product -> {
+            productService.deleteProduct(product.getId());
+        });
         categoryRepository.deleteById(id);
     }
 

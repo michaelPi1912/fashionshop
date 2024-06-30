@@ -29,11 +29,21 @@ public class AddressController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<AddressResponse> getAddressByUser(@AuthenticationPrincipal User user){
+    public ResponseEntity<AddressResponse> getAddressByUser(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
 
-        return ResponseEntity.ok(service.findAllByUser(user));
+        return ResponseEntity.ok(service.findAllByUser(user, page, size));
     }
-
+    @PutMapping("/update/{id}")
+    public void updateAddress(
+            @RequestBody AddressRequest body,
+            @PathVariable("id") UUID id
+    ){
+        service.updateAddress(body, id);
+    }
     @DeleteMapping("/delete/{id}")
     public void deleteAddress(@PathVariable("id") UUID id){
         service.deleteAddress(id);

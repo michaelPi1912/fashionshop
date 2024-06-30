@@ -13,6 +13,6 @@ public interface VariationRepository extends JpaRepository<Variation, UUID> {
             from Variation v
             where v.category.id = :categoryId
             """)
-    List<Variation> getProductsByCategoryId(UUID categoryId);
+    List<Variation> getByCategoryId(UUID categoryId);
 
 }

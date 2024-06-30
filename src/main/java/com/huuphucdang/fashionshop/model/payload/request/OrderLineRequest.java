@@ -12,7 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderLineRequest {
-    private UUID cartItemId;
-    private UUID orderId;
+//    private UUID cartItemId;
+//    private UUID orderId;
+    private UUID itemId;
     private int quantity;
 }

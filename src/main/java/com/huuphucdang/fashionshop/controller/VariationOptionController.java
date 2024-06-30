@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,7 +42,12 @@ public class VariationOptionController {
 
 
     @DeleteMapping("delete/{id}")
-    public void deletePromotion(@PathVariable("id") UUID id) {
+    public void deleteOption(@PathVariable("id") UUID id) {
         service.deleteOption(id);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OptionResponse> getAllByProductItem(@PathVariable("id") UUID id){
+        return ResponseEntity.ok(service.findByProductItemId(id));
     }
 }

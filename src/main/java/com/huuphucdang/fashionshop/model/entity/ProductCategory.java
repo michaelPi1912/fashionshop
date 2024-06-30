@@ -1,5 +1,6 @@
 package com.huuphucdang.fashionshop.model.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,13 +26,13 @@ public class ProductCategory {
     @JoinColumn(name = "parent_id")
     private ProductCategory parent;
     @JsonIgnore
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private Collection<ProductCategory> categories;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductCategory> categories;
     @JsonIgnore
-    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Variation> variations;
 
     @ManyToMany(fetch = FetchType.LAZY,
@@ -43,16 +44,5 @@ public class ProductCategory {
     @JsonIgnore
     private Set<Promotion> promotions = new HashSet<>();
 
-    public void addPromotion(Promotion promotion) {
-        this.promotions.add(promotion);
-        promotion.getPromotionCategories().add(this);
-    }
 
-    public void removePromotion(UUID promotionId) {
-        Promotion promotion = this.promotions.stream().filter(t -> t.getId() == promotionId).findFirst().orElse(null);
-        if (promotion != null) {
-            this.promotions.remove(promotion);
-            promotion.getPromotionCategories().remove(this);
-        }
-    }
 }

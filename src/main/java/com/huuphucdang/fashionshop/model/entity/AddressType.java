@@ -20,7 +20,7 @@ public class AddressType {
     @GeneratedValue
     private Integer id;
     private String name;
-    @JsonIgnore
-    @OneToMany(mappedBy = "addressType", cascade = CascadeType.ALL)
-    private List<Address> addresses;
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "addressType", cascade = CascadeType.ALL)
+//    private List<Address> addresses;
 }

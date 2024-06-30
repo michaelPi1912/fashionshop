@@ -5,6 +5,7 @@ import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.entity.UserReview;
 import com.huuphucdang.fashionshop.model.payload.request.CartItemRequest;
 import com.huuphucdang.fashionshop.model.payload.request.ReviewRequest;
+import com.huuphucdang.fashionshop.model.payload.response.ReviewResponse;
 import com.huuphucdang.fashionshop.service.CartItemService;
 import com.huuphucdang.fashionshop.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,37 @@ public class ReviewController {
     ){
         service.saveReview(user, body);
     }
-    @GetMapping("/{productId}")
-    public ResponseEntity<List<UserReview>> getAllByProduct(@PathVariable("productId") UUID productId){
-        return ResponseEntity.ok(service.getAllReviewByProduct(productId));
+    @GetMapping("/all")
+    public ResponseEntity<ReviewResponse> getAll(
+                @RequestParam(defaultValue = "0") int page,
+                @RequestParam(defaultValue = "5") int size,
+                @RequestParam(defaultValue = "") String email,
+                @RequestParam(defaultValue = "") String start,
+                @RequestParam(defaultValue = "") String end,
+                @RequestParam(defaultValue = "0") int status,
+                @RequestParam(defaultValue = "0") int rating
+                ){
+        return ResponseEntity.ok(service.getAll(page,size, email, start, end, status, rating));
     }
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<ReviewResponse> getAllByProduct(
+            @PathVariable("productId") UUID productId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "0") int rating
+
+            ){
+        return ResponseEntity.ok(service.getAllReviewByProduct(productId, page, size,rating));
+    }
+
+    @GetMapping("/product/all/{productId}")
+    public ResponseEntity<List<UserReview>> getByProduct(
+            @PathVariable("productId") UUID productId
+    ){
+        return ResponseEntity.ok(service.getAllProduct(productId));
+    }
+
+
     @GetMapping("/user")
     public ResponseEntity<List<UserReview>> getAllReviewByUser(
             @AuthenticationPrincipal User user
@@ -46,6 +74,13 @@ public class ReviewController {
     ){
         service.updateReview(body, id);
     }
+    @PutMapping("/update/active/{id}")
+    public void updateActive(
+            @PathVariable("id") UUID id
+    ){
+        service.changeActive(id);
+    }
+
     @DeleteMapping("/delete/{id}")
     public void deleteReview(@PathVariable("id") UUID id){
         service.deleteReview(id);

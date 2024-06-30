@@ -13,7 +13,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ReviewRequest {
     private String comment;
-    private UUID orderLineId;
-    private float rating;
+    private UUID productId;
+    private int rating;
     private UUID parentId;
+    private String fit;
+    private String gender;
+    private String age;
+    private String height;
+    private String weight;
+    private String size;
 }

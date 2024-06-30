@@ -33,7 +33,7 @@ public class CartItemService {
         }
         CartItem item = new CartItem();
         item.setCart(cart);
-        item.setProduct(product);
+//        item.setProduct(product);
         item.setQuantity(body.getQuantity());
 
         return itemRepository.save(item);

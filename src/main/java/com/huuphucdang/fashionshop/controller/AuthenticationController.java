@@ -1,5 +1,6 @@
 package com.huuphucdang.fashionshop.controller;
 
+import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.payload.request.AuthenticationRequest;
 import com.huuphucdang.fashionshop.model.payload.request.ChangePasswordRequest;
 import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
@@ -8,7 +9,9 @@ import com.huuphucdang.fashionshop.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -41,14 +44,22 @@ public class AuthenticationController {
     ) throws IOException {
         service.refreshToken(request, response);
     }
+
+
     //send Link to mail
     //chua test
-    @PutMapping("/forgot-password/{email}")
-    public ResponseEntity<?> changePasswordForgot(
+    @PutMapping("/changePassword")
+    public void changePasswordForgot(
             @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal User user
+    ){
+        service.changePasswordForgot(request, user);
+    }
+
+    @GetMapping("/forgotPassword/{email}")
+    public ResponseEntity<String> sendMail(
             @PathVariable("email") String email
     ){
-        service.changePasswordForgot(request, email);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(service.sendEmail(email, "Automated Message: Password Reset Request"), HttpStatus.OK);
     }
 }

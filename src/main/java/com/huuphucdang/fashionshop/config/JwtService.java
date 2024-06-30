@@ -31,14 +31,15 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, int time){
+        return generateToken(new HashMap<>(), userDetails,time);
     }
     public String generateToken(
             Map<String, Objects> extractClaims,
-            UserDetails userDetails
+            UserDetails userDetails,
+            int time
     ){
-        return buildToken(extractClaims, userDetails, 86400000);
+        return buildToken(extractClaims, userDetails, time);
     }
 
     public String generateRefreshToken(

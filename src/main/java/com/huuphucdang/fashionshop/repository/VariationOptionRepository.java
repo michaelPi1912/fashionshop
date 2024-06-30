@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface VariationOptionRepository extends JpaRepository<VariationOption, UUID> {
@@ -16,18 +17,23 @@ public interface VariationOptionRepository extends JpaRepository<VariationOption
             from VariationOption o
             where o.variation.id = :variationId
             """)
-    List<VariationOption> findOptionsByVariationId(UUID variationId);
+    Set<VariationOption> findOptionsByVariationId(UUID variationId);
+
     @Transactional
     @Modifying
     @Query(
-            value = "delete from product_configuration p where p.product_id = :productId and p.variation_option_id = :optionId",
+            value = "delete from product_configuration p " +
+                    "where p.product_item_id IN(select * from (select c.product_item_id from product_configuration c " +
+                    "where c.variation_option_id = :id) b)",
             nativeQuery = true
     )
-    void deleteOptionFromProduct(@Param("productId") UUID productId,@Param("optionId") UUID optionId);
-    @Query(value = "Select o.id, o.value, o.variation_id from variation_option o " +
-            "inner join product_configuration p " +
-            "on o.id = p.variation_option_id " +
-            "where p.product_id = :productId",
-            nativeQuery = true)
-    List<VariationOption> findOptionsByProductId(UUID productId);
+    void deleteOptionById(UUID id);
+
+
+
+    @Query(value = "select o.id, o.value, o.variation_id from variation_option o inner join " +
+            "product_configuration p on p.variation_option_id = o.id where  p.product_item_id = :productItemId", nativeQuery = true)
+    Set<VariationOption> findByProductItemId(UUID productItemId);
+
+
 }
