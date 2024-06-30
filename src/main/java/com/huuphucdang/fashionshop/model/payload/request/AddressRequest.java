@@ -15,5 +15,5 @@ public class AddressRequest {
     private String district;
     private String commune;
     private String addressDetail;
-    private AddressType addressType;
+    private String addressType;
 }

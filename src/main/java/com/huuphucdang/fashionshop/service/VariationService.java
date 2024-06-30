@@ -1,19 +1,16 @@
 package com.huuphucdang.fashionshop.service;
 
 import com.huuphucdang.fashionshop.model.entity.*;
-import com.huuphucdang.fashionshop.model.payload.request.AddressRequest;
-import com.huuphucdang.fashionshop.model.payload.request.PromotionRequest;
 import com.huuphucdang.fashionshop.model.payload.request.VariationRequest;
-import com.huuphucdang.fashionshop.model.payload.response.ProductResponse;
-import com.huuphucdang.fashionshop.model.payload.response.PromotionResponse;
 import com.huuphucdang.fashionshop.model.payload.response.VariationResponse;
 import com.huuphucdang.fashionshop.repository.CategoryRepository;
+import com.huuphucdang.fashionshop.repository.VariationOptionRepository;
 import com.huuphucdang.fashionshop.repository.VariationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -22,6 +19,8 @@ public class VariationService {
 
     private final VariationRepository variationRepository;
     private final CategoryRepository categoryRepository;
+    private final VariationOptionRepository variationOptionRepository;
+    private final VariationOptionService optionService;
 
     public Variation saveVariation(VariationRequest body){
 
@@ -34,20 +33,14 @@ public class VariationService {
         return variationRepository.save(variation);
     }
     public void deleteVariation(UUID id) {
+        Set<VariationOption> options = variationOptionRepository.findOptionsByVariationId(id);
+        options.forEach(variationOption -> {
+            optionService.deleteOption(variationOption.getId());
+        });
         variationRepository.deleteById(id);
     }
 
-    //getAll
-    public VariationResponse findAll(){
-        List<Variation> variationList = variationRepository.findAll();
-        if(variationList.isEmpty()){
-            return null;
-        }
 
-        return VariationResponse.builder()
-                .variationList(variationList)
-                .build();
-    }
     public Variation updateVariation(VariationRequest body, UUID id) {
         Variation variation = variationRepository.findById(id).orElseThrow();
         ProductCategory category = categoryRepository.findById(body.getCategoryId()).orElseThrow();
@@ -59,9 +52,12 @@ public class VariationService {
     }
 
     public VariationResponse getAllByCategoryId(UUID categoryId) {
-        List<Variation> variationList = variationRepository.getProductsByCategoryId(categoryId);
-
+        List<Variation> variationList = variationRepository.getByCategoryId(categoryId);
+        for(Variation variation: variationList){
+            Set<VariationOption> options = variationOptionRepository.findOptionsByVariationId(variation.getId());
+            variation.setVariationOptions(options);
+        }
         return VariationResponse.builder()
-                .variationList(variationList).build();
+                .variations(variationList).build();
     }
 }

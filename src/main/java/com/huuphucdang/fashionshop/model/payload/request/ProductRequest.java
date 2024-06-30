@@ -20,6 +20,6 @@ public class ProductRequest {
     private String name;
     private String description;
     private List<String> image;
-    private Integer price;
-    private Integer stock;
+//    private Integer price;
+//    private Integer stock;
 }

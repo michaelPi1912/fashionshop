@@ -1,5 +1,6 @@
 package com.huuphucdang.fashionshop.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,14 +29,28 @@ public class UserReview {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private UserReview parent;
+    @JsonIgnore
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<UserReview> reviews;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "product_id", name = "ordered_product_id")
-    private OrderLine orderLine;
-    @Column(name = "rating_value")
-    private Float ratingValue;
-    private String comment;
 
+
+    @ManyToOne
+    @JoinColumn(name = "ordered_product_id")
+    private Product product;
+
+    @Column(name = "rating_value")
+    private Integer ratingValue;
+    private String comment;
+    private boolean active;
+    private Date commentDate;
+    private String fit;
+    private String gender;
+    private String age;
+    private String height;
+    private String weight;
+    private String size;
 }

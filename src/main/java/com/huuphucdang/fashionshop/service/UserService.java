@@ -1,20 +1,23 @@
 package com.huuphucdang.fashionshop.service;
 
+import com.huuphucdang.fashionshop.model.entity.Order;
 import com.huuphucdang.fashionshop.model.entity.Product;
+import com.huuphucdang.fashionshop.model.entity.Role;
 import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.payload.request.ChangePasswordRequest;
+import com.huuphucdang.fashionshop.model.payload.request.RegisterRequest;
 import com.huuphucdang.fashionshop.model.payload.response.UsersResponse;
+import com.huuphucdang.fashionshop.repository.ProductRepository;
 import com.huuphucdang.fashionshop.repository.TokenRepository;
 import com.huuphucdang.fashionshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,18 +28,17 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
-        var user = (User)((UsernamePasswordAuthenticationToken) connectedUser).getCredentials();
+    private final ProductRepository productRepository;
+    public User changePassword(ChangePasswordRequest request, User user) {
+        System.out.println(request.getNewPassword());
+//        var user = (User)((UsernamePasswordAuthenticationToken) connectedUser).getCredentials();
 
         if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())){
-            throw new IllegalStateException("Wrong Password");
-        }
-        if(!request.getNewPassword().equals(request.getConfirmationPassword())){
-            throw new IllegalStateException("Password are not the same");
+            return new User();
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public void deleteUser(UUID id) {
@@ -44,11 +46,37 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UsersResponse findAllUser(int page, int size) {
+    public UsersResponse findAllUser(int page, int size, String email, String name, int active, int role) {
         try{
             List<User> users;
+            Specification<User> spec = Specification.where(null);
+
+            if(!email.isEmpty()){
+                spec = spec.and((root, query, cb) -> cb.like(root.get("email"), "%"+email+"%"));
+            }
+
+            if(active == 1){
+                spec = spec.and((root, query, cb) -> cb.equal(root.get("isActive"), false));
+            }
+            if(active == 2){
+                spec = spec.and((root, query, cb) -> cb.equal(root.get("isActive"), true));
+            }
+            if(role == 1){
+                spec = spec.and((root, query, cb) -> cb.equal(root.get("role"), "ADMIN"));
+            }
+            if(role == 2){
+                spec = spec.and((root, query, cb) -> cb.equal(root.get("role"), "MANAGER"));
+            }
+            if(role == 3){
+                spec = spec.and((root, query, cb) -> cb.equal(root.get("role"), "USER"));
+            }
+
+
+            if(!name.isEmpty()){
+                spec = spec.and((root, query, cb) -> cb.like(root.get("firstname"), "%"+name+"%")).or((root, query, cb) -> cb.like(root.get("lastname"), "%"+name+"%"));
+            }
             Pageable paging = PageRequest.of(page, size);
-            Page<User> pageUsers = userRepository.findAll(paging);
+            Page<User> pageUsers = userRepository.findAll(spec,paging);
             users = pageUsers.getContent();
 
             return UsersResponse.builder()
@@ -75,4 +103,31 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Product addProduct(UUID userId, Product productRequest) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Product product = productRepository.findById(productRequest.getId()).orElseThrow();
+        user.getProducts().add(product);
+
+        return productRepository.save(product);
+    }
+
+    public void deleteProduct(UUID userId, UUID productId) {
+        productRepository.deleteProductWishList(userId, productId);
+    }
+
+    public Product checkWishList(User user, UUID id) {
+        List<Product> products = productRepository.checkWishList(user.getId(),id);
+
+        return products.isEmpty() ? new Product() : products.getFirst();
+    }
+
+    public User updateProfile(RegisterRequest body, User user) {
+        user.setFirstname(body.getFirstname());
+        user.setLastname(body.getLastname());
+        user.setPhone(body.getPhone());
+        user.setGender(body.getGender());
+
+
+        return userRepository.save(user);
+    }
 }

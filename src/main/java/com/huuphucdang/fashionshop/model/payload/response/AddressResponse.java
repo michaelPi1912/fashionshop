@@ -14,4 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AddressResponse {
     List<Address> addressList;
+    int currentPage;
+    long totalItems;
+    int totalPages;
 }

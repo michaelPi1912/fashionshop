@@ -2,7 +2,6 @@ package com.huuphucdang.fashionshop.controller;
 
 import com.huuphucdang.fashionshop.model.entity.ProductCategory;
 import com.huuphucdang.fashionshop.model.entity.Promotion;
-import com.huuphucdang.fashionshop.model.payload.request.AddressRequest;
 import com.huuphucdang.fashionshop.model.payload.request.PromotionRequest;
 import com.huuphucdang.fashionshop.model.payload.response.CategoryResponse;
 import com.huuphucdang.fashionshop.model.payload.response.PromotionResponse;

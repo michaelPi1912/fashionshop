@@ -1,5 +1,6 @@
 package com.huuphucdang.fashionshop.model.entity;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -21,8 +22,11 @@ public class Variation {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore
     private ProductCategory category;
     private String name;
+    @JsonIgnore
     @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
     private Set<VariationOption> variationOptions;
+
 }

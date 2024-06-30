@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,28 +25,27 @@ public class Order {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "order_date")
     private Date orderDate;
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String code;
+    private String address;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderLine> orderLines;
-    @ManyToOne
-    @JoinColumn(name = "payment_type_id")
-    private PaymentType payment;
-    @ManyToOne
-    @JoinColumn(name = "shipping_method_id")
-    private ShippingMethod shippingMethod;
+    private String paymentType;
+    private String shippingMethod;
+    private Integer shipCost;
     @Column(name = "order_total")
     private double orderTotal;
     @ManyToOne
     @JoinColumn(name = "order_status_id")
     private OrderStatus orderStatus;
+    private String phone;
+    private Date deliveryDate;
 
+    private Set<String> coupons = new HashSet<>();
+    private String description;
 
 }

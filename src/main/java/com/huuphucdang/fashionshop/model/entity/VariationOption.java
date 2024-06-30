@@ -33,5 +33,5 @@ public class VariationOption {
             },
             mappedBy = "options")
     @JsonIgnore
-    private Set<Product> products = new HashSet<>();
+    private Set<ProductItem> products = new HashSet<>();
 }

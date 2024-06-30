@@ -2,7 +2,9 @@ package com.huuphucdang.fashionshop.controller;
 
 import com.huuphucdang.fashionshop.model.entity.Product;
 import com.huuphucdang.fashionshop.model.entity.Promotion;
+import com.huuphucdang.fashionshop.model.entity.User;
 import com.huuphucdang.fashionshop.model.entity.VariationOption;
+import com.huuphucdang.fashionshop.model.payload.request.FilterRequest;
 import com.huuphucdang.fashionshop.model.payload.request.ProductRequest;
 import com.huuphucdang.fashionshop.model.payload.response.OptionResponse;
 import com.huuphucdang.fashionshop.model.payload.response.ProductResponse;
@@ -11,8 +13,11 @@ import com.huuphucdang.fashionshop.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,27 +33,47 @@ public class ProductController {
         service.saveProduct(body);
     }
 
-    @PostMapping("/{productId}/option/{optionId}")
-    public ResponseEntity<Product> addOption(
-            @PathVariable(value = "productId") UUID productId,
-            @PathVariable(value = "optionId") UUID optionId) {
-
-        return ResponseEntity.ok(service.addOption(productId, optionId));
-    }
 
     @GetMapping("/all")
     public ResponseEntity<ProductResponse> getAllProduct(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "") String category,
+            @RequestParam(defaultValue = "") String search
     ){
 
-        return ResponseEntity.ok(service.getAll(page, size));
+        return ResponseEntity.ok(service.getAll(page, size,category,search));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ProductResponse> getAllProductByCategoryName(@RequestParam(value="name") String categoryName){
-        return ResponseEntity.ok(service.getAllByCategoryName(categoryName));
+    public ResponseEntity<ProductResponse> getAllProductByCategoryName(
+            @RequestParam(defaultValue = "all") String category,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "") List<String> colors,
+            @RequestParam(defaultValue = "") List<String> sizes,
+            @RequestParam(defaultValue = "0") int min,
+            @RequestParam(defaultValue = "0") int max
+            ){
+        return ResponseEntity.ok(service.getAllByCategoryName(search,category,page,size,sizes, colors, min, max));
     }
+
+    @PostMapping("/filter")
+    public ResponseEntity<ProductResponse> getAllByFilter(
+            @RequestBody FilterRequest body,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
+        return ResponseEntity.ok(service.getAllByFilter(body, page, size));
+    }
+
+    @GetMapping("/related/{category}/{id}")
+    public ResponseEntity<ProductResponse> getProductsRelated(@PathVariable("category") String category, @PathVariable("id") UUID id){
+
+        return ResponseEntity.ok(service.getAllRelated(category,id));
+    }
+
 
     @GetMapping("/{categoryId}/products")
     public ResponseEntity<ProductResponse> getAllProductByCategory(@PathVariable("categoryId") UUID categoryId){
@@ -62,12 +87,6 @@ public class ProductController {
         return ResponseEntity.ok(service.getProductById(id));
     }
 
-    @GetMapping("/{productId}/options")
-    public ResponseEntity<OptionResponse> getAllOptionsByProductId(@PathVariable(value = "productId") UUID productId) {
-
-        return ResponseEntity.ok(service.findOptionsByProduct(productId));
-    }
-
     @PutMapping("/update/{id}")
     public void updateProduct(
             @RequestBody ProductRequest body,
@@ -76,15 +95,19 @@ public class ProductController {
         service.updateProduct(body, id);
     }
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public void deleteProduct(@PathVariable("id") UUID id){
         service.deleteProduct(id);
     }
 
-    @DeleteMapping("/{productId}/option/{optionId}")
-    public void deleteOptionFromProduct(
-            @PathVariable(value = "productId") UUID productId,
-            @PathVariable(value = "optionId") UUID optionId) {
 
-        service.deleteOptionFromProduct(productId, optionId);
+    @GetMapping("/wish-list")
+    public ProductResponse getWishListByUser(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
+        return service.getWishListByUser(user.getId(), page, size);
     }
+
 }

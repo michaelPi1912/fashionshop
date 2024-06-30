@@ -15,12 +15,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,9 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final JavaMailSender mailSender;
+    private final String FELink = "http://localhost:3000/changePassword?token=";
+
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User
                 .builder()
@@ -46,7 +52,7 @@ public class AuthenticationService {
                 .isActive(true)
                 .build();
         var saveUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user,86400000);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(saveUser, jwtToken);
         return AuthenticationResponse
@@ -68,7 +74,7 @@ public class AuthenticationService {
 
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user,86400000);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user,jwtToken);
@@ -120,7 +126,7 @@ public class AuthenticationService {
             var user = this.repository.findByEmail(userEmail)
                     .orElseThrow();
             if(jwtService.isTokenValid(refreshToken, user)){
-                var accessToken = jwtService.generateToken(user);
+                var accessToken = jwtService.generateToken(user,86400000);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
@@ -144,18 +150,43 @@ public class AuthenticationService {
     }
 
     //reset password
-    public void changePasswordForgot(ChangePasswordRequest request, String email) {
-        var user = (User) userRepository.findByEmail(email).orElseThrow();
-//        make a reset password api
-//        var jwtToken = jwtService.generateToken(user);
-//        var refreshToken = jwtService.generateRefreshToken(user);
-//        revokeAllUserTokens(user);
-//        saveUserToken(user,jwtToken);
-        if(!request.getNewPassword().equals(request.getConfirmationPassword())){
-            throw new IllegalStateException("Password are not the same");
-        }
-
+    public void changePasswordForgot(ChangePasswordRequest request, User user) {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+
+    public String sendEmail(String toEmail, String subject){
+        try {
+            var user = repository.findByEmail(toEmail).isPresent() ?repository.findByEmail(toEmail).orElseThrow() : null;
+            if(user == null){
+                return "Information provided doesn’t match our records";
+            }
+            var jwtToken = jwtService.generateToken(user,86400000/24);
+            revokeAllUserTokens(user);
+            saveUserToken(user,jwtToken);
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("khugohyeah@gmail.com");
+            message.setTo(toEmail);
+            String body = "Hello,\n" +
+                    "\n" +
+                    "You recently requested to reset your password. Click on the link below to change your password.\n" +
+                    "\n" +
+                    FELink+jwtToken +
+                    "\n" +
+                    "If you did not make the request to reset your password or if you are in need of further assistance, please contact our Customer Service Team" +
+                    "\n" +
+                    "Thanks!";
+            message.setText(body);
+            message.setSubject(subject);
+
+            mailSender.send(message);
+
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return "Email has been sent to your email address";
     }
 }

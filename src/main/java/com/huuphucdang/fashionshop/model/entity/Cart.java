@@ -24,7 +24,7 @@ public class Cart {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
-    @JsonIgnore
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
